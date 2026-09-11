@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.3.1-alpha — 2026-09-11
+
+### Fixed
+
+- Setup could leave you stuck: **Save** depended on an internal "accept entries" review step that wasn't always reachable, so it was possible to get stuck re-opening preview with no direct way to actually save. Save now always commits the plan directly; **Preview plan** is a separate, optional button that never affects saving. ([#1](https://github.com/nirajkamal/dailypages.koplugin/pull/1))
+- Creating or updating a plan no longer auto-jumps into the reading view; it shows a short confirmation and leaves you where you were.
+
 ## v0.3.0-alpha — 2026-09-11
 
 First public release. Experimental.
