@@ -1459,6 +1459,25 @@ function DailyPages:settingsMenu()
                 { text = _("4:00 am"), callback = function() self:setSetting("rollover_minutes", 240) end },
             },
         },
+        {
+            -- Own updater rather than relying on an app-store index: the
+            -- KOReader plugin stores (ZenPM and similar) gate listing on a
+            -- star count this repo hasn't reached yet. This mirrors
+            -- myclippings.koplugin's "Check for updates..." exactly, so the
+            -- plugin can be kept current from inside itself regardless of
+            -- whether it's ever indexed anywhere.
+            text = _("Check for updates..."),
+            separator = true,
+            keep_menu_open = true,
+            callback = function()
+                local ok, Updater = pcall(require, "dailypages_updater")
+                if ok then
+                    Updater.check()
+                else
+                    UIManager:show(InfoMessage:new{ text = _("Update checker unavailable.") })
+                end
+            end,
+        },
     }
 end
 

@@ -36,6 +36,12 @@ Marking an entry read is the only thing that counts as reading. Browsing ahead, 
 
 You should then find it under **Tools → Daily Pages**.
 
+### Upgrade
+
+Once installed, **Tools → Daily Pages → Settings → Check for updates...** downloads and installs the latest release for you and offers to restart. No manual re-copy needed after the first install.
+
+(This isn't yet listed in any KOReader plugin store/app-store index -- those typically gate listing on a star count this repo hasn't reached. The built-in updater works regardless.)
+
 ### Uninstall
 
 Delete the `dailypages.koplugin` folder and restart KOReader. Your plans live in `settings/dailypages_db.lua` inside KOReader's data directory — delete that too if you want the history gone as well.
