@@ -953,7 +953,6 @@ function DailyPages:commitPlan(opts)
         self:reconcile(record)
         self:saveDB()
         UIManager:show(InfoMessage:new{ text = _("Plan updated."), timeout = 2 })
-        self:showToday()
         return
     end
 
@@ -981,7 +980,7 @@ function DailyPages:commitPlan(opts)
         book_path = opts.book_path,
     }
     self:saveDB()
-    self:showToday()
+    UIManager:show(InfoMessage:new{ text = _("Plan created."), timeout = 2 })
 end
 
 -- ===================== Default plan =====================

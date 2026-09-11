@@ -268,6 +268,21 @@ function SetupView:build()
 
     -- --- actions ---
     table.insert(rows, VerticalSpan:new{ width = Screen:scaleBySize(14) })
+    table.insert(rows, LeftContainer:new{
+        dimen = Geom:new{ w = screen_w, h = Screen:scaleBySize(48) },
+        HorizontalGroup:new{
+            HorizontalSpan:new{ width = margin },
+            Button:new{
+                text = _("Preview plan"),
+                text_font_face = self.theme.face_ui, text_font_size = 16,
+                bordersize = Size.border.thin, radius = 0,
+                width = inner_w, padding_v = Screen:scaleBySize(7),
+                show_parent = self,
+                callback = function() self:previewEntries() end,
+            },
+        },
+    })
+    table.insert(rows, VerticalSpan:new{ width = Screen:scaleBySize(8) })
     local btn_w = math.floor(inner_w * 0.48)
     table.insert(rows, LeftContainer:new{
         dimen = Geom:new{ w = screen_w, h = Screen:scaleBySize(52) },
@@ -283,7 +298,7 @@ function SetupView:build()
             },
             HorizontalSpan:new{ width = Screen:scaleBySize(10) },
             Button:new{
-                text = self.existing_plan and _("Save changes") or _("Start plan"),
+                text = self.existing_plan and _("Save changes") or _("Create plan"),
                 text_font_face = self.theme.face_ui, text_font_size = 16,
                 text_font_bold = true,
                 -- NOT a filled button: Button hardcodes its label to
@@ -348,7 +363,7 @@ end
 
 -- ===================== Pickers =====================
 
-function SetupView:previewEntries(save_after_review)
+function SetupView:previewEntries()
     local opt = self:currentOption()
     if not opt then return end
     local Menu = require("ui/widget/menu")
@@ -369,11 +384,6 @@ function SetupView:previewEntries(save_after_review)
         }
     end
     local menu
-    table.insert(items, 1, {text=save_after_review and _("Accept entries and save plan") or _("Use these entries"), callback=function()
-        self._reviewed_entries = opt.entries
-        UIManager:close(menu)
-        if save_after_review then self:onSave() end
-    end})
     menu = Menu:new{title=T(_("Preview %1 entries"),opt.count), item_table=items,
         width=Screen:getWidth(), height=Screen:getHeight(), is_popout=false,
         close_callback=function() UIManager:close(menu) end}
@@ -392,7 +402,6 @@ function SetupView:scanHeadings()
         -- A verified day sequence is a useful suggestion, still previewable.
         for _i,opt in ipairs(options) do if opt.depth < 0 then self.depth=opt.depth end end
         self:refresh()
-        self:previewEntries()
     end)
 end
 
@@ -634,21 +643,6 @@ function SetupView:onSave()
         UIManager:show(InfoMessage:new{ text = _("Pick what counts as an entry first.") })
         return
     end
-    -- Pace-only edits do not need another review of unchanged boundaries.
-    if self.existing_plan and self._reviewed_entries ~= opt.entries then
-        local record = self.plugin.db.plans[self.book_path]
-        local old = record and record.entries or {}
-        local same = #old == #opt.entries
-        for i,e in ipairs(old) do
-            local new = opt.entries[i]
-            if not new or e.xp ~= new.xp or e.end_xp ~= new.end_xp then same=false; break end
-        end
-        if same then self._reviewed_entries = opt.entries end
-    end
-    if self._reviewed_entries ~= opt.entries then
-        self:previewEntries(true)
-        return
-    end
     if self.existing_plan then
         local record = self.plugin.db.plans[self.book_path]
         local old = record and record.entries or {}
@@ -665,6 +659,7 @@ function SetupView:onSave()
         end
     end
     UIManager:close(self)
+    self.plugin:onSetupClosed()
     self.plugin:commitPlan{
         book_path = self.book_path,
         toc_depth = self.depth,
