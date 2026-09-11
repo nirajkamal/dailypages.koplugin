@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.3.2-alpha — 2026-09-11
+
+### Added
+
+- **Check for updates...** in Settings. Downloads and installs the latest release directly from GitHub and offers to restart -- no manual re-copy needed. Prefers the release's own zip asset (built via `git archive` at the tag, so it always matches exactly what's tagged) over GitHub's auto-generated archive.
+
+### Fixed
+
+- The update checker itself: GitHub's `/releases/latest` endpoint excludes prereleases, and every release here is alpha-tagged -- so it would have silently 404'd until this plugin leaves alpha. Now reads the releases list instead, which works regardless of prerelease status.
+
 ## v0.3.1-alpha — 2026-09-11
 
 ### Fixed
